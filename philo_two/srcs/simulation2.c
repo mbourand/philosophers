@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:05 by user42            #+#    #+#             */
-/*   Updated: 2020/11/06 02:06:58 by user42           ###   ########.fr       */
+/*   Updated: 2020/11/07 17:13:12 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ void	wait_philosophers(t_env *env)
 		if (env->terminated.val == env->stngs.philo_nb)
 		{
 			sem_post(env->terminated.mutex);
+			write(2, "test\n", 5);
 			return ;
 		}
 		sem_post(env->terminated.mutex);

@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/06 01:44:11 by user42            #+#    #+#             */
-/*   Updated: 2020/11/06 01:53:29 by user42           ###   ########.fr       */
+/*   Updated: 2020/11/07 15:10:33 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static char	*ft_strcpy(char *dest, char *src)
 	return (dest);
 }
 
-static char	*ft_itoa_buf(unsigned int nb, char *buf)
+char		*ft_itoa_buf(unsigned int nb, char *buf)
 {
 	int		len;
 

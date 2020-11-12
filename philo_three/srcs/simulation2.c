@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:05 by user42            #+#    #+#             */
-/*   Updated: 2020/11/06 16:19:32 by user42           ###   ########.fr       */
+/*   Updated: 2020/11/09 02:33:52 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,29 +24,21 @@ int		starved(t_philo *philo)
 void	*check_philo_death(void *arg)
 {
 	t_philo	*philo;
+	int fed;
 
 	philo = (t_philo*)arg;
-	sem_wait(philo->dead.mutex);
-	sem_wait(philo->meals.mutex);
-	while (!philo->dead.val && philo->meals.val < philo->env->stngs.max_eat)
+	while (!is_finished(philo) && !(fed = is_fed(philo)))
 	{
-		sem_post(philo->dead.mutex);
-		if (philo->meals.val < philo->env->stngs.max_eat &&
-			starved(philo))
+		if (!fed && starved(philo))
 		{
 			phil_die(philo);
-			sem_post(philo->meals.mutex);
 			sem_post(philo->last_eat.mutex);
 			exit(philo->exit_code);
 			return (NULL);
 		}
-		sem_post(philo->meals.mutex);
 		sem_post(philo->last_eat.mutex);
-		phil_wait(10);
-		sem_wait(philo->dead.mutex);
-		sem_wait(philo->meals.mutex);
+		phil_wait(1000);
 	}
-	sem_post(philo->dead.mutex);
 	return (NULL);
 }
 

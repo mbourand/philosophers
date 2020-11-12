@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/06 03:05:33 by user42            #+#    #+#             */
-/*   Updated: 2020/11/06 14:06:15 by user42           ###   ########.fr       */
+/*   Updated: 2020/11/09 01:31:19 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,4 +57,14 @@ void		print_log(int t, int id, char *msg)
 	write(1, buf, i);
 	while (--i >= 0)
 		buf[i] = 0;
+}
+
+int		is_fed(t_philo *philo)
+{
+	int ret;
+
+	sem_wait(philo->meals.mutex);
+	ret = philo->meals.val >= philo->env->stngs.max_eat;
+	sem_post(philo->meals.mutex);
+	return (ret);
 }

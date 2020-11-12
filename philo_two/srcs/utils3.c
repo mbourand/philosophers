@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:17 by user42            #+#    #+#             */
-/*   Updated: 2020/11/06 01:46:20 by user42           ###   ########.fr       */
+/*   Updated: 2020/11/07 15:07:08 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ char	*ft_strjoin(char *s1, char *s2)
 		res[i] = s1[i];
 	i--;
 	while (++i < s1len + s2len)
-		res[i] = s2[i];
+		res[i] = s2[i - s1len];
 	res[s1len + s2len] = 0;
 	return (res);
 }

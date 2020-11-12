@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:12 by user42            #+#    #+#             */
-/*   Updated: 2020/11/05 16:11:44 by user42           ###   ########.fr       */
+/*   Updated: 2020/11/07 17:05:25 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,17 +57,18 @@ int		get_args(int ac, char **av, t_env *env)
 int		init_philosopher(t_env *env, int i)
 {
 	t_philo *philo;
+	char buf[256];
 
 	philo = env->philos + (i - 1);
 	philo->env = env;
 	philo->id = i;
-	philo->lsteat_name = ft_strjoin("last_eat", ft_itoa(i));
+	philo->lsteat_name = ft_strjoin("last_eat", ft_itoa_buf(i, buf));
 	sem_unlink(philo->lsteat_name);
 	philo->last_eat.mutex = sem_open(philo->lsteat_name, O_CREAT, 0777, 1);
 	philo->last_eat.val = get_time();
 	philo->l_fork = (i == 0 ? (int)env->stngs.philo_nb - 1 : (i - 1));
 	philo->r_fork = i % env->stngs.philo_nb;
-	philo->meals_name = ft_strjoin("meals", ft_itoa(i));
+	philo->meals_name = ft_strjoin("meals", buf);
 	sem_unlink(philo->meals_name);
 	philo->meals.mutex = sem_open(philo->meals_name, O_CREAT, 0777, 1);
 	philo->meals.val = 0;

@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:30 by user42            #+#    #+#             */
-/*   Updated: 2020/11/06 01:45:51 by user42           ###   ########.fr       */
+/*   Updated: 2020/11/07 15:10:42 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,5 +87,6 @@ char			*ft_strjoin(char *s1, char *s2);
 char			*ft_itoa(unsigned int nb);
 int				ft_numlen(unsigned int i);
 void			print_log(int t, int id, char *msg);
+char			*ft_itoa_buf(unsigned int nb, char *buf);
 
 #endif

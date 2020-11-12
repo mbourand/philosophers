@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -Wextra -Werror
+CFLAGS=-Wall -Wextra -Werror -fsanitize=leak
 NAME=philo_three
 
 INCS=incs/

@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:05 by user42            #+#    #+#             */
-/*   Updated: 2020/11/06 15:48:15 by user42           ###   ########.fr       */
+/*   Updated: 2020/11/12 01:44:02 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,11 @@ void	fork_and_eat(t_philo *philo)
 
 int		try_eat(t_env *env, t_philo *philo)
 {
+	(void)env;
 	if (can_eat(philo))
 	{
 		fork_and_eat(philo);
-		if (philo->meals.val >= env->stngs.max_eat)
+		if (is_fed(philo))
 			return (1);
 		phil_sleep(philo);
 		phil_think(philo);
@@ -45,17 +46,13 @@ void	*process_philosopher(void *param)
 
 	philo = (t_philo*)param;
 	env = philo->env;
-	sem_wait(philo->dead.mutex);
-	while (!philo->dead.val)
+	while (!is_finished(philo))
 	{
-		sem_post(philo->dead.mutex);
 		if (try_eat(env, philo))
 		{
 			philo->exit_code = FED;
 			break ;
 		}
-		sem_wait(philo->dead.mutex);
 	}
-	sem_post(philo->dead.mutex);
 	return (NULL);
 }
