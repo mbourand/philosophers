@@ -5,7 +5,7 @@
 --- MANGE LE BON NOMBRE DE FOIS ---
 ./philo_ 4 410 200 200 7 | grep '1 is eating'
 ./philo_ 5 800 200 200 7 | grep '1 is eating'
-./philo_ 200 610 200 100 15 | grep '1 is eating'
+./philo_ 200 610 200 100 15 | grep '111 is eating'
 
 --- MEURS CORRECTEMENT ---
 ./philo_ 4 310 200 100
