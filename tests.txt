@@ -1,0 +1,18 @@
+--- PERFORMANCES ---
+./philo_ 4 410 200 200
+./philo_ 5 800 200 200
+
+--- MANGE LE BON NOMBRE DE FOIS ---
+./philo_ 4 410 200 200 7 | grep '1 is eating'
+./philo_ 5 800 200 200 7 | grep '1 is eating'
+./philo_ 200 610 200 100 15 | grep '1 is eating'
+
+--- MEURS CORRECTEMENT ---
+./philo_ 4 310 200 100
+./philo_ 2 310 200 100
+
+--- GRAND NOMBRE DE PHILO ---
+./philo_ 200 610 200 100
+
+--- TIMINGS ---
+./philo_ 2 410 200 200

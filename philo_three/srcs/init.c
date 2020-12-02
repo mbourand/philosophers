@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init_philosophers.c                                :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/09/21 12:28:12 by user42            #+#    #+#             */
-/*   Updated: 2020/11/12 18:34:41 by user42           ###   ########.fr       */
+/*   Created: 2020/12/02 14:07:45 by user42            #+#    #+#             */
+/*   Updated: 2020/12/02 16:28:24 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,18 @@ int		init_env(t_env *env)
 		return (0);
 	env->start_time = get_time();
 	sem_unlink("log");
+	sem_unlink("finish");
 	sem_unlink("forks");
 	sem_unlink("picking");
-	sem_unlink("one_dead");
-	env->log_mutex = sem_open("log", O_CREAT | O_EXCL, 0770, 1);
-	env->forks = sem_open("forks", O_CREAT | O_EXCL, 0770, env->stngs.philo_nb);
-	env->picking = sem_open("picking", O_CREAT | O_EXCL, 0770, 1);
-	env->one_dead = sem_open("one_dead", O_CREAT | O_EXCL, 0770, 0);
+	sem_unlink("fed");
+	sem_unlink("stop");
+	env->log_mutex = sem_open("log", O_CREAT | O_EXCL, 0777, 1);
+	env->finish.mutex = sem_open("finish", O_CREAT | O_EXCL, 0777, 1);
+	env->forks = sem_open("forks", O_CREAT | O_EXCL, 0777, env->stngs.philo_nb);
+	env->picking = sem_open("picking", O_CREAT | O_EXCL, 0777, 1);
+	env->fed = sem_open("fed", O_CREAT | O_EXCL, 0777, 1);
+	env->stop = sem_open("stop", O_CREAT | O_EXCL, 0777, 0);
+	env->finish.val = 0;
 	return (1);
 }
 
@@ -50,47 +55,37 @@ int		get_args(int ac, char **av, t_env *env)
 	return (1);
 }
 
-void	create_fork(t_philo *philo)
-{
-	pid_t	pid;
-
-	pid = fork();
-	if (pid == -1)
-		return ;
-	else if (pid == 0)
-	{
-		pthread_create(&philo->death_thread, NULL, &check_philo_death, philo);
-		pthread_detach(philo->death_thread);
-		process_philosopher(philo);
-	}
-	else
-		philo->thread = pid;
-}
-
 int		init_philosopher(t_env *env, int i)
 {
-	t_philo *philo;
-	char	buff[256];
+	t_philo	*philo;
+	char	buf[256];
 
 	philo = env->philos + (i - 1);
 	philo->env = env;
 	philo->id = i;
-	ft_strjoin_buf("last_eat", ft_itoa_buf(i, buff), philo->lsteat_name);
+	ft_strjoin("last_eat", ft_itoa(i, buf), philo->lsteat_name);
 	sem_unlink(philo->lsteat_name);
-	philo->last_eat.mutex = sem_open(philo->lsteat_name, O_CREAT, 0770, 1);
-	philo->last_eat.val = get_time();
-	ft_strjoin_buf("meals", buff, philo->meals_name);
+	philo->last_eat.mutex = sem_open(philo->lsteat_name, O_CREAT | O_EXCL, 0777, 1);
+	ft_strjoin("meals", buf, philo->meals_name);
 	sem_unlink(philo->meals_name);
-	philo->meals.mutex = sem_open(philo->meals_name, O_CREAT, 0770, 1);
+	philo->meals.mutex = sem_open(philo->meals_name, O_CREAT | O_EXCL, 0777, 1);
+	ft_strjoin("catch_stop", buf, philo->catch_name);
+	sem_unlink(philo->catch_name);
+	philo->catch_stop = sem_open(philo->catch_name, O_CREAT | O_EXCL, 0777, 0);
 	philo->meals.val = 0;
-	ft_strjoin_buf("dead", buff, philo->dead_name);
-	sem_unlink(philo->dead_name);
-	philo->dead.mutex = sem_open(philo->dead_name, O_CREAT, 0770, 1);
-	philo->dead.val = 0;
-	ft_strjoin_buf("ate", buff, philo->ate_name);
-	sem_unlink(philo->ate_name);
-	philo->ate = sem_open(philo->ate_name, O_CREAT, 0770, 0);
-	create_fork(philo);
+	philo->set_fed_mutex = 0;
+	if ((philo->pid = fork()) == 0)
+	{
+		philo->last_eat.val = get_time();
+		pthread_create(&philo->thread, NULL, &process_philosopher, philo);
+		pthread_create(&philo->death_thread, NULL, &wait_philosophers_death, philo);
+		sem_wait(env->stop);
+		set_mutexint(&env->finish, 1);
+		sem_post(philo->catch_stop);
+		pthread_join(philo->thread, NULL);
+		pthread_join(philo->death_thread, NULL);
+		exit(0);
+	}
 	return (1);
 }
 

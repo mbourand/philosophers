@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:05 by user42            #+#    #+#             */
-/*   Updated: 2020/11/13 13:33:23 by user42           ###   ########.fr       */
+/*   Updated: 2020/12/02 16:16:13 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,24 +25,73 @@ void	fork_and_eat(t_philo *philo)
 	sem_post(philo->env->forks);
 }
 
-int		try_eat(t_env *env, t_philo *philo)
-{
-	(void)env;
-	fork_and_eat(philo);
-	phil_sleep(philo);
-	phil_think(philo);
-	return (0);
-}
-
 void	*process_philosopher(void *param)
 {
 	t_philo	*philo;
-	t_env	*env;
 
 	philo = (t_philo*)param;
-	env = philo->env;
-	while (!is_finished(philo))
-		if (try_eat(env, philo))
-			break ;
+	while (!get_mutexint(&philo->env->finish))
+	{
+		fork_and_eat(philo);
+		if (!philo->set_fed_mutex &&
+			get_mutexint(&philo->meals) >= philo->env->stngs.max_eat)
+		{
+			sem_post(philo->env->fed);
+			philo->set_fed_mutex = 1;
+		}
+		phil_sleep(philo);
+		phil_think(philo);
+	}
+	return (NULL);
+}
+
+int		starved(t_philo *philo)
+{
+	int ret;
+
+	sem_wait(philo->last_eat.mutex);
+	ret = get_time() - philo->last_eat.val >= philo->env->stngs.die_time;
+	return (ret);
+}
+
+void	*wait_philosophers_death(void *param)
+{
+	t_philo	*philo;
+	int		i;
+
+	i = -1;
+	philo = (t_philo*)param;
+	while (!get_mutexint(&philo->env->finish))
+	{
+		if (starved(philo))
+		{
+			phil_die(philo);
+			while (++i < philo->env->stngs.philo_nb)
+				sem_post(philo->env->stop);
+			sem_post(philo->last_eat.mutex);
+			return (0);
+		}
+		else
+			sem_post(philo->last_eat.mutex);
+		phil_wait(1000);
+	}
+	return (NULL);
+}
+
+void	*wait_philosophers_fed(void *param)
+{
+	t_env	*env;
+	int		i;
+
+	env = (t_env*)param;
+	i = 0;
+	while (i < env->stngs.philo_nb)
+	{
+		sem_wait(env->fed);
+		i++;
+	}
+	i = -1;
+	while (++i < env->stngs.philo_nb)
+		sem_post(env->stop);
 	return (NULL);
 }
