@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:05 by user42            #+#    #+#             */
-/*   Updated: 2020/10/30 17:33:58 by user42           ###   ########.fr       */
+/*   Updated: 2020/12/01 01:18:34 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,37 +25,59 @@ void	fork_and_eat(t_philo *philo)
 	sem_post(philo->env->forks);
 }
 
-int		try_eat(t_env *env, t_philo *philo)
-{
-	fork_and_eat(philo);
-	if (philo->meals.val >= env->stngs.max_eat)
-		return (1);
-	phil_sleep(philo);
-	phil_think(philo);
-	return (0);
-}
-
 void	*process_philosopher(void *param)
 {
 	t_philo	*philo;
-	t_env	*env;
 
 	philo = (t_philo*)param;
-	env = philo->env;
-	sem_wait(env->finish.mutex);
-	while (!env->finish.val)
+	while (!get_mutexint(&philo->env->finish))
 	{
-		sem_post(env->finish.mutex);
-		if (try_eat(env, philo))
+		fork_and_eat(philo);
+		if (!philo->set_fed_mutex && is_fed(philo))
 		{
-			sem_wait(env->finish.mutex);
-			break ;
+			inc_mutexint(&philo->env->fed);
+			philo->set_fed_mutex = 1;
 		}
-		sem_wait(env->finish.mutex);
+		phil_sleep(philo);
+		phil_think(philo);
 	}
-	sem_post(env->finish.mutex);
-	sem_wait(env->terminated.mutex);
-	env->terminated.val++;
-	sem_post(env->terminated.mutex);
 	return (NULL);
+}
+
+int		starved(t_philo *philo)
+{
+	int ret;
+
+	sem_wait(philo->last_eat.mutex);
+	ret = get_time() - philo->last_eat.val >= philo->env->stngs.die_time;
+	return (ret);
+}
+
+int		wait_philosophers(t_env *env)
+{
+	int i;
+
+	while (1)
+	{
+		i = 0;
+		while (i < env->stngs.philo_nb)
+		{
+			if (starved(env->philos + i))
+			{
+				phil_die(env->philos + i);
+				sem_post(env->philos[i].last_eat.mutex);
+				return (0);
+			}
+			else
+				sem_post(env->philos[i].last_eat.mutex);
+			i++;
+		}
+		if (get_mutexint(&env->fed) == env->stngs.philo_nb)
+		{
+			set_mutexint(&env->finish, 1);
+			return (1);
+		}
+		phil_wait(1000);
+	}
+	return (0);
 }

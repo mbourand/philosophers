@@ -6,11 +6,41 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:30 by user42            #+#    #+#             */
-/*   Updated: 2020/11/06 01:22:09 by user42           ###   ########.fr       */
+/*   Updated: 2020/11/30 18:15:38 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
+
+size_t	ft_strlen(char *s)
+{
+	size_t	i;
+
+	if (!s)
+		return (0);
+	i = 0;
+	while (s[i])
+		i++;
+	return (i);
+}
+
+int		ft_atoui(const char *s)
+{
+	int res;
+	int i;
+
+	i = -1;
+	res = 0;
+	if (!s || !s[0])
+		return (-1);
+	while (s[++i])
+	{
+		if (s[i] < '0' || s[i] > '9')
+			return (-1);
+		res = res * 10 + (s[i] - '0');
+	}
+	return (res);
+}
 
 char	*ft_strcpy(char *dest, char *src)
 {
@@ -51,22 +81,4 @@ char	*ft_itoa(unsigned int nb, char *buf)
 		nb /= 10;
 	}
 	return (buf);
-}
-
-void	print_log(int t, int id, char *msg)
-{
-	static char	buf[256];
-	int			i;
-
-	ft_itoa(t, buf);
-	i = ft_numlen(t);
-	buf[i++] = ' ';
-	ft_itoa(id, buf + i);
-	i += ft_numlen(id);
-	ft_strcpy(buf + i, msg);
-	i += ft_strlen(msg);
-	buf[i++] = '\n';
-	write(1, buf, i);
-	while (--i >= 0)
-		buf[i] = 0;
 }

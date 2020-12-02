@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:17 by user42            #+#    #+#             */
-/*   Updated: 2020/11/06 16:19:12 by user42           ###   ########.fr       */
+/*   Updated: 2020/11/12 03:48:25 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,15 +67,19 @@ void	free_env(t_env *env)
 		sem_close(env->philos[i].meals.mutex);
 		sem_close(env->philos[i].last_eat.mutex);
 		sem_close(env->philos[i].dead.mutex);
+		sem_close(env->philos[i].ate);
 		sem_unlink(env->philos[i].meals_name);
 		sem_unlink(env->philos[i].lsteat_name);
 		sem_unlink(env->philos[i].dead_name);
+		sem_unlink(env->philos[i].ate_name);
 	}
 	sem_close(env->log_mutex);
 	sem_close(env->forks);
 	sem_close(env->picking);
+	sem_close(env->one_dead);
 	sem_unlink("log");
 	sem_unlink("forks");
 	sem_unlink("picking");
+	sem_unlink("one_dead");
 	free(env->philos);
 }

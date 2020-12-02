@@ -1,60 +1,59 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils2.c                                           :+:      :+:    :+:   */
+/*   phil_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/09/21 12:28:17 by user42            #+#    #+#             */
-/*   Updated: 2020/10/28 01:27:49 by user42           ###   ########.fr       */
+/*   Created: 2020/09/21 12:28:01 by user42            #+#    #+#             */
+/*   Updated: 2020/12/01 03:09:44 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-size_t	ft_strlen(char *s)
+void	log_philo(t_philo *philo, int t, char *msg)
 {
-	size_t	i;
-
-	if (!s)
-		return (0);
-	i = 0;
-	while (s[i])
-		i++;
-	return (i);
+	if (get_mutexint(&philo->env->finish))
+		return ;
+	sem_wait(philo->env->log_mutex);
+	print_log(t, philo->id, msg);
+	sem_post(philo->env->log_mutex);
 }
 
-void	ft_putchar(char c)
+void	log_philo_force(t_philo *philo, int t, char *msg)
 {
-	write(1, &c, 1);
+	sem_wait(philo->env->log_mutex);
+	print_log(t, philo->id, msg);
+	sem_post(philo->env->log_mutex);
 }
 
-void	ft_putnbr(int i)
+void	print_log(int t, int id, char *msg)
 {
-	unsigned int	nb;
+	static char	buf[256];
+	int			i;
 
-	nb = (i < 0 ? -i : i);
-	if (nb >= 10)
-		ft_putnbr(nb / 10);
-	ft_putchar(nb % 10 + '0');
+	ft_itoa(t, buf);
+	i = ft_numlen(t);
+	buf[i++] = ' ';
+	ft_itoa(id, buf + i);
+	i += ft_numlen(id);
+	ft_strcpy(buf + i, msg);
+	i += ft_strlen(msg);
+	buf[i++] = '\n';
+	write(1, buf, i);
+	while (--i >= 0)
+		buf[i] = 0;
 }
 
-int		ft_atoui(const char *s)
+int		is_fed(t_philo *philo)
 {
-	int res;
-	int i;
+	int ret;
 
-	i = -1;
-	res = 0;
-	if (!s || !s[0])
-		return (-1);
-	while (s[++i])
-	{
-		if (s[i] < '0' || s[i] > '9')
-			return (-1);
-		res = res * 10 + (s[i] - '0');
-	}
-	return (res);
+	sem_wait(philo->meals.mutex);
+	ret = philo->meals.val >= philo->env->stngs.max_eat;
+	sem_post(philo->meals.mutex);
+	return (ret);
 }
 
 void	free_env(t_env *env)
@@ -68,18 +67,16 @@ void	free_env(t_env *env)
 		sem_close(env->philos[i].last_eat.mutex);
 		sem_unlink(env->philos[i].meals_name);
 		sem_unlink(env->philos[i].lsteat_name);
-		free(env->philos[i].lsteat_name);
-		free(env->philos[i].meals_name);
 	}
 	sem_close(env->log_mutex);
-	sem_close(env->terminated.mutex);
 	sem_close(env->finish.mutex);
 	sem_close(env->forks);
 	sem_close(env->picking);
+	sem_close(env->fed.mutex);
 	sem_unlink("log");
 	sem_unlink("finish");
 	sem_unlink("forks");
-	sem_unlink("terminated");
 	sem_unlink("picking");
+	sem_unlink("fed");
 	free(env->philos);
 }

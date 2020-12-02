@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:05 by user42            #+#    #+#             */
-/*   Updated: 2020/11/09 02:33:52 by user42           ###   ########.fr       */
+/*   Updated: 2020/11/13 13:31:54 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,50 +24,50 @@ int		starved(t_philo *philo)
 void	*check_philo_death(void *arg)
 {
 	t_philo	*philo;
-	int fed;
 
 	philo = (t_philo*)arg;
-	while (!is_finished(philo) && !(fed = is_fed(philo)))
+	while (!is_finished(philo))
 	{
-		if (!fed && starved(philo))
+		if (starved(philo))
 		{
 			phil_die(philo);
 			sem_post(philo->last_eat.mutex);
-			exit(philo->exit_code);
+			sem_post(philo->env->one_dead);
 			return (NULL);
 		}
 		sem_post(philo->last_eat.mutex);
-		phil_wait(1000);
+		phil_wait(2000);
 	}
 	return (NULL);
 }
 
-void	interpret_exit_code(t_env *env)
+void	*wait_fed(void *param)
 {
-	int	status;
-	int i;
+	t_env	*env;
+	int		ttl;
+	int		i;
 
-	i = 0;
-	if (waitpid(-1, &status, 0) <= 0)
-		return ;
-	if (WEXITSTATUS(status) == DEAD)
+	env = (t_env*)param;
+	ttl = 0;
+	while (ttl < env->stngs.max_eat)
 	{
+		i = 0;
 		while (i < env->stngs.philo_nb)
-			kill(env->philos[i++].thread, SIGKILL);
-		env->terminated = env->stngs.philo_nb;
+			sem_wait(env->philos[i++].ate);
+		ttl++;
 	}
-	else if (WEXITSTATUS(status) == FED)
-		env->terminated++;
+	sem_wait(env->log_mutex);
+	write(1, "Everyone is fed.\n", 17);
+	sem_post(env->one_dead);
+	return (NULL);
 }
 
 void	wait_philosophers(t_env *env)
 {
-	while (env->terminated != env->stngs.philo_nb)
-		interpret_exit_code(env);
-}
+	int i;
 
-int		can_eat(t_philo *philo)
-{
-	(void)philo;
-	return (1);
+	i = 0;
+	sem_wait(env->one_dead);
+	while (i < env->stngs.philo_nb)
+		kill(env->philos[i++].thread, SIGKILL);
 }

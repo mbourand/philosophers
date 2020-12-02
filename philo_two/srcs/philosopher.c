@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:10 by user42            #+#    #+#             */
-/*   Updated: 2020/10/26 22:00:58 by user42           ###   ########.fr       */
+/*   Updated: 2020/12/01 01:31:48 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,46 +14,55 @@
 
 void	phil_eat(t_philo *philo)
 {
-	if (is_finished(philo->env))
+	int	t;
+
+	t = get_time() - philo->env->start_time;
+	if (get_mutexint(&philo->env->finish))
 		return ;
-	log_philo(philo, " is eating.");
-	sem_wait(philo->meals.mutex);
-	philo->meals.val++;
-	sem_post(philo->meals.mutex);
-	sem_wait(philo->last_eat.mutex);
-	philo->last_eat.val = get_time();
-	sem_post(philo->last_eat.mutex);
+	set_mutexint(&philo->last_eat, get_time());
+	inc_mutexint(&philo->meals);
+	log_philo(philo, t, " is eating.");
 	phil_wait(philo->env->stngs.eat_time * 1000);
 }
 
 void	phil_sleep(t_philo *philo)
 {
-	if (is_finished(philo->env))
+	int	t;
+
+	t = get_time() - philo->env->start_time;
+	if (get_mutexint(&philo->env->finish))
 		return ;
-	log_philo(philo, " is sleeping.");
+	log_philo(philo, t, " is sleeping.");
 	phil_wait(philo->env->stngs.sleep_time * 1000);
 }
 
 void	phil_die(t_philo *philo)
 {
-	if (is_finished(philo->env))
+	int	t;
+
+	t = get_time() - philo->env->start_time;
+	if (get_mutexint(&philo->env->finish))
 		return ;
-	sem_wait(philo->env->finish.mutex);
-	philo->env->finish.val = 1;
-	sem_post(philo->env->finish.mutex);
-	log_philo_force(philo, " died.");
+	set_mutexint(&philo->env->finish, 1);
+	log_philo_force(philo, t, " died.");
 }
 
 void	phil_think(t_philo *philo)
 {
-	if (is_finished(philo->env))
+	int	t;
+
+	t = get_time() - philo->env->start_time;
+	if (get_mutexint(&philo->env->finish))
 		return ;
-	log_philo(philo, " is thinking.");
+	log_philo(philo, t, " is thinking.");
 }
 
 void	phil_fork(t_philo *philo)
 {
-	if (is_finished(philo->env))
+	int	t;
+
+	t = get_time() - philo->env->start_time;
+	if (get_mutexint(&philo->env->finish))
 		return ;
-	log_philo(philo, " has taken a fork.");
+	log_philo(philo, t, " has taken a fork.");
 }

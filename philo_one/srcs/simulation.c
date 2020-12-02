@@ -6,92 +6,98 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:05 by user42            #+#    #+#             */
-/*   Updated: 2020/10/26 19:46:15 by user42           ###   ########.fr       */
+/*   Updated: 2020/11/30 19:27:35 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-void	use_fork(t_philo *philo, int index)
-{
-	pthread_mutex_lock(&philo->env->forks[index].last_philo.mutex);
-	philo->env->forks[index].last_philo.val = philo->id;
-	pthread_mutex_unlock(&philo->env->forks[index].last_philo.mutex);
-	philo->env->forks[index].uses++;
-}
-
-int		take_forks(t_philo *philo)
+void	fork_and_eat(t_philo *philo)
 {
 	int lr;
 	int index;
-	int ret;
 
 	lr = 0;
 	while (lr < 2)
 	{
 		index = (philo->id + lr) % 2 ? philo->l_fork : philo->r_fork;
-		wait_fork(philo, index);
-		if ((ret = is_finished(philo->env)))
-			break ;
 		pthread_mutex_lock(&philo->env->forks[index].mutex);
 		phil_fork(philo);
-		use_fork(philo, index);
+		set_mutexint(&philo->env->forks[index].last_philo, philo->id);
 		lr++;
 	}
-	if (lr == 2)
-		return (ret);
-	index = philo->id % 2 ? philo->l_fork : philo->r_fork;
-	if (lr == 1)
-		pthread_mutex_unlock(&philo->env->forks[index].mutex);
-	return (ret);
-}
-
-void	fork_and_eat(t_philo *philo)
-{
-	int was_finished;
-
-	was_finished = take_forks(philo);
-	if (was_finished)
-		return ;
 	phil_eat(philo);
 	pthread_mutex_unlock(&philo->env->forks[philo->l_fork].mutex);
 	pthread_mutex_unlock(&philo->env->forks[philo->r_fork].mutex);
 }
 
-int		try_eat(t_env *env, t_philo *philo)
+void	*process_philosopher(void *param)
 {
-	if (can_eat(philo))
+	t_philo	*philo;
+
+	philo = (t_philo*)param;
+	while (!get_mutexint(&philo->env->finish))
 	{
-		fork_and_eat(philo);
-		if (philo->meals.val >= env->stngs.max_eat)
+		if (can_eat(philo))
+		{
+			fork_and_eat(philo);
+			if (!philo->set_fed_mutex && is_fed(philo))
+			{
+				inc_mutexint(&philo->env->fed);
+				philo->set_fed_mutex = 1;
+			}
+			phil_sleep(philo);
+			phil_think(philo);
+		}
+	}
+	return (NULL);
+}
+
+int		starved(t_philo *philo)
+{
+	int ret;
+
+	pthread_mutex_lock(&philo->last_eat.mutex);
+	ret = get_time() - philo->last_eat.val >= philo->env->stngs.die_time;
+	return (ret);
+}
+
+int		wait_philosophers(t_env *env)
+{
+	int i;
+
+	while (1)
+	{
+		i = 0;
+		while (i < env->stngs.philo_nb)
+		{
+			if (starved(env->philos + i))
+			{
+				phil_die(env->philos + i);
+				pthread_mutex_unlock(&env->philos[i].last_eat.mutex);
+				return (0);
+			}
+			else
+				pthread_mutex_unlock(&env->philos[i].last_eat.mutex);
+			i++;
+		}
+		if (get_mutexint(&env->fed) == env->stngs.philo_nb)
+		{
+			set_mutexint(&env->finish, 1);
 			return (1);
-		phil_sleep(philo);
-		phil_think(philo);
+		}
+		phil_wait(1000);
 	}
 	return (0);
 }
 
-void	*process_philosopher(void *param)
+int		can_eat(t_philo *philo)
 {
-	t_philo	*philo;
-	t_env	*env;
+	int fst;
+	int sec;
 
-	philo = (t_philo*)param;
-	env = philo->env;
-	pthread_mutex_lock(&env->finish.mutex);
-	while (!env->finish.val)
-	{
-		pthread_mutex_unlock(&env->finish.mutex);
-		if (try_eat(env, philo))
-		{
-			pthread_mutex_lock(&env->finish.mutex);
-			break ;
-		}
-		pthread_mutex_lock(&env->finish.mutex);
-	}
-	pthread_mutex_unlock(&env->finish.mutex);
-	pthread_mutex_lock(&env->terminated.mutex);
-	env->terminated.val++;
-	pthread_mutex_unlock(&env->terminated.mutex);
-	return (NULL);
+	fst = philo->id % 2 ? philo->l_fork : philo->r_fork;
+	sec = (philo->id + 1) % 2 ? philo->l_fork : philo->r_fork;
+	return (get_mutexint(&philo->env->forks[fst].last_philo) != philo->id
+		&& get_mutexint(&philo->env->forks[sec].last_philo) != philo->id);
 }

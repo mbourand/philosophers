@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:12 by user42            #+#    #+#             */
-/*   Updated: 2020/11/09 02:33:23 by user42           ###   ########.fr       */
+/*   Updated: 2020/11/12 18:34:41 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,11 @@ int		init_env(t_env *env)
 	sem_unlink("log");
 	sem_unlink("forks");
 	sem_unlink("picking");
-	env->log_mutex = sem_open("log", O_CREAT, 0770, 1);
-	env->forks = sem_open("forks", O_CREAT, 0770, env->stngs.philo_nb);
-	env->picking = sem_open("picking", O_CREAT, 0770, 1);
-	env->terminated = 0;
+	sem_unlink("one_dead");
+	env->log_mutex = sem_open("log", O_CREAT | O_EXCL, 0770, 1);
+	env->forks = sem_open("forks", O_CREAT | O_EXCL, 0770, env->stngs.philo_nb);
+	env->picking = sem_open("picking", O_CREAT | O_EXCL, 0770, 1);
+	env->one_dead = sem_open("one_dead", O_CREAT | O_EXCL, 0770, 0);
 	return (1);
 }
 
@@ -61,7 +62,6 @@ void	create_fork(t_philo *philo)
 		pthread_create(&philo->death_thread, NULL, &check_philo_death, philo);
 		pthread_detach(philo->death_thread);
 		process_philosopher(philo);
-		exit(philo->exit_code);
 	}
 	else
 		philo->thread = pid;
@@ -87,7 +87,9 @@ int		init_philosopher(t_env *env, int i)
 	sem_unlink(philo->dead_name);
 	philo->dead.mutex = sem_open(philo->dead_name, O_CREAT, 0770, 1);
 	philo->dead.val = 0;
-	philo->exit_code = DEAD;
+	ft_strjoin_buf("ate", buff, philo->ate_name);
+	sem_unlink(philo->ate_name);
+	philo->ate = sem_open(philo->ate_name, O_CREAT, 0770, 0);
 	create_fork(philo);
 	return (1);
 }

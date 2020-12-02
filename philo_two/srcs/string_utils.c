@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils2.c                                           :+:      :+:    :+:   */
+/*   string_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/09/21 12:28:17 by user42            #+#    #+#             */
-/*   Updated: 2020/10/26 19:48:13 by user42           ###   ########.fr       */
+/*   Created: 2020/09/21 12:28:30 by user42            #+#    #+#             */
+/*   Updated: 2020/12/01 02:19:05 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,21 +22,6 @@ size_t	ft_strlen(char *s)
 	while (s[i])
 		i++;
 	return (i);
-}
-
-void	ft_putchar(char c)
-{
-	write(1, &c, 1);
-}
-
-void	ft_putnbr(int i)
-{
-	unsigned int	nb;
-
-	nb = (i < 0 ? -i : i);
-	if (nb >= 10)
-		ft_putnbr(nb / 10);
-	ft_putchar(nb % 10 + '0');
 }
 
 int		ft_atoui(const char *s)
@@ -57,21 +42,59 @@ int		ft_atoui(const char *s)
 	return (res);
 }
 
-void	free_env(t_env *env)
+char	*ft_strcpy(char *dest, char *src)
 {
 	int i;
 
-	i = -1;
-	while (++i < env->stngs.philo_nb)
+	if (!dest || !src)
+		return (dest);
+	i = 0;
+	while (src[i])
 	{
-		pthread_mutex_destroy(&env->philos[i].meals.mutex);
-		pthread_mutex_destroy(&env->philos[i].last_eat.mutex);
-		pthread_mutex_destroy(&env->forks[i].mutex);
-		pthread_mutex_destroy(&env->forks[i].last_philo.mutex);
+		dest[i] = src[i];
+		i++;
 	}
-	pthread_mutex_destroy(&env->log_mutex);
-	pthread_mutex_destroy(&env->terminated.mutex);
-	pthread_mutex_destroy(&env->finish.mutex);
-	free(env->philos);
-	free(env->forks);
+	return (dest);
+}
+
+int		ft_numlen(unsigned int i)
+{
+	unsigned int	len;
+
+	len = 1;
+	while (i >= 10)
+	{
+		len++;
+		i /= 10;
+	}
+	return (len);
+}
+
+char	*ft_itoa(unsigned int nb, char *buf)
+{
+	int		len;
+
+	len = ft_numlen(nb);
+	buf[len] = 0;
+	while (--len >= 0)
+	{
+		buf[len] = (nb % 10) + '0';
+		nb /= 10;
+	}
+	return (buf);
+}
+
+char	*ft_strjoin(char *s1, char *s2, char *buf)
+{
+	size_t	i;
+	size_t	j;
+
+	i = -1;
+	j = -1;
+	while (s1[++i])
+		buf[i] = s1[i];
+	while (s2[++j])
+		buf[i + j] = s2[j];
+	buf[i + j] = 0;
+	return (buf);
 }

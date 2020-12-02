@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:10 by user42            #+#    #+#             */
-/*   Updated: 2020/11/09 02:22:54 by user42           ###   ########.fr       */
+/*   Updated: 2020/11/13 13:33:04 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,8 @@ void	phil_eat(t_philo *philo)
 	sem_wait(philo->last_eat.mutex);
 	philo->last_eat.val = get_time();
 	sem_post(philo->last_eat.mutex);
-	sem_wait(philo->meals.mutex);
 	philo->meals.val++;
-	sem_post(philo->meals.mutex);
+	sem_post(philo->ate);
 	log_philo(philo, t, " is eating.");
 	phil_wait(philo->env->stngs.eat_time * 1000);
 }

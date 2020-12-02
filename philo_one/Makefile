@@ -4,7 +4,7 @@ NAME=philo_one
 
 INCS=incs/
 
-SRCS= main.c simulation.c philosopher.c utils.c utils2.c simulation2.c utils3.c
+SRCS= main.c simulation.c philosopher.c phil_utils.c string_utils.c time_utils.c mutexint.c
 SRCS_PATH=srcs/
 
 OBJS_PATH=objs/

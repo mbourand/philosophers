@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:30 by user42            #+#    #+#             */
-/*   Updated: 2020/11/09 02:31:01 by user42           ###   ########.fr       */
+/*   Updated: 2020/11/12 18:34:38 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,8 @@ typedef struct	s_env
 	struct s_philo	*philos;
 	sem_t			*forks;
 	sem_t			*picking;
+	sem_t			*one_dead;
 	int				start_time;
-	int				terminated;
 }				t_env;
 
 typedef struct	s_philo
@@ -64,10 +64,11 @@ typedef struct	s_philo
 	t_mutexint	last_eat;
 	t_mutexint	meals;
 	t_mutexint	dead;
+	sem_t		*ate;
 	char		dead_name[256];
 	char		meals_name[256];
 	char		lsteat_name[256];
-	int			exit_code;
+	char		ate_name[256];
 }				t_philo;
 
 void			*process_philosopher(void *philo);
@@ -103,5 +104,6 @@ int				ft_numlen(unsigned int i);
 char			*ft_itoa_buf(unsigned int nb, char *buf);
 int				free_vars(t_philo *philo);
 int				is_fed(t_philo *philo);
+void			*wait_fed(void* param);
 
 #endif

@@ -1,10 +1,11 @@
 CC=gcc
-CFLAGS=-Wall -Wextra -Werror -g3
+CFLAGS=-Wall -Wextra -Werror
+
 NAME=philo_two
 
 INCS=incs/
 
-SRCS= main.c simulation.c philosopher.c utils.c utils2.c simulation2.c utils3.c utils4.c
+SRCS= main.c simulation.c philosopher.c phil_utils.c string_utils.c time_utils.c mutexint.c
 SRCS_PATH=srcs/
 
 OBJS_PATH=objs/
