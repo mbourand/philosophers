@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:12 by user42            #+#    #+#             */
-/*   Updated: 2020/11/30 19:27:08 by user42           ###   ########.fr       */
+/*   Updated: 2020/12/03 15:27:36 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int		init_philosopher(t_env *env, int i)
 	philo->id = i;
 	pthread_mutex_init(&philo->last_eat.mutex, NULL);
 	philo->last_eat.val = get_time();
-	philo->l_fork = (i == 0 ? (int)env->stngs.philo_nb - 1 : (i - 1));
+	philo->l_fork = i - 1;
 	philo->r_fork = i % env->stngs.philo_nb;
 	pthread_mutex_init(&philo->meals.mutex, NULL);
 	philo->meals.val = 0;

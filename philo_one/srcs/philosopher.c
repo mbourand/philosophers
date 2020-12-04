@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:10 by user42            #+#    #+#             */
-/*   Updated: 2020/11/30 13:28:07 by user42           ###   ########.fr       */
+/*   Updated: 2020/12/04 14:03:51 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,13 @@ void	phil_think(t_philo *philo)
 	if (get_mutexint(&philo->env->finish))
 		return ;
 	log_philo(philo, t, " is thinking.");
+	if (philo->env->stngs.philo_nb % 2)
+		phil_wait((philo->env->stngs.eat_time
+			- philo->env->stngs.sleep_time) * 999);
+	else if (philo->env->stngs.philo_nb % 2 &&
+		(!(philo->id % 2) || philo->id == philo->env->stngs.philo_nb))
+		phil_wait((philo->env->stngs.eat_time
+			- philo->env->stngs.sleep_time) * 999);
 }
 
 void	phil_fork(t_philo *philo)
