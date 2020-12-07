@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:12 by user42            #+#    #+#             */
-/*   Updated: 2020/12/01 03:09:47 by user42           ###   ########.fr       */
+/*   Updated: 2020/12/04 16:46:54 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,12 @@ int		init_env(t_env *env)
 	sem_unlink("forks");
 	sem_unlink("picking");
 	sem_unlink("fed");
-	env->log_mutex = sem_open("log", O_CREAT | O_EXCL, 0644, 1);
-	env->finish.mutex = sem_open("finish", O_CREAT | O_EXCL, 0644, 1);
-	env->forks = sem_open("forks", O_CREAT | O_EXCL, 0644, env->stngs.philo_nb);
-	env->picking = sem_open("picking", O_CREAT | O_EXCL, 0644, 1);
-	env->fed.mutex = sem_open("fed", O_CREAT | O_EXCL, 0644, 1);
+	env->log_mutex = sem_open("log", O_CREAT | O_EXCL, SEM_PERMS, 1);
+	env->finish.mutex = sem_open("finish", O_CREAT | O_EXCL, SEM_PERMS, 1);
+	env->forks = sem_open("forks", O_CREAT | O_EXCL, SEM_PERMS,
+		env->stngs.philo_nb);
+	env->picking = sem_open("picking", O_CREAT | O_EXCL, SEM_PERMS, 1);
+	env->fed.mutex = sem_open("fed", O_CREAT | O_EXCL, SEM_PERMS, 1);
 	env->fed.val = 0;
 	env->finish.val = 0;
 	return (1);
@@ -64,14 +65,16 @@ int		init_philosopher(t_env *env, int i)
 	philo->id = i;
 	ft_strjoin("last_eat", ft_itoa(i, buf), philo->lsteat_name);
 	sem_unlink(philo->lsteat_name);
-	philo->last_eat.mutex = sem_open(philo->lsteat_name, O_CREAT | O_EXCL, 0777, 1);
+	philo->last_eat.mutex = sem_open(philo->lsteat_name, O_CREAT | O_EXCL,
+		SEM_PERMS, 1);
 	philo->last_eat.val = get_time();
 	ft_strjoin("meals", buf, philo->meals_name);
 	sem_unlink(philo->meals_name);
-	philo->meals.mutex = sem_open(philo->meals_name, O_CREAT | O_EXCL, 0777, 1);
+	philo->meals.mutex = sem_open(philo->meals_name, O_CREAT | O_EXCL,
+		SEM_PERMS, 1);
 	philo->meals.val = 0;
-	pthread_create(&philo->thread, NULL, &process_philosopher, philo);
 	philo->set_fed_mutex = 0;
+	pthread_create(&philo->thread, NULL, &process_philosopher, philo);
 	return (1);
 }
 

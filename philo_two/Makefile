@@ -1,6 +1,14 @@
 CC=gcc
 CFLAGS=-Wall -Wextra -Werror
 
+DB=0
+
+ifeq ($(DB),1)
+	CFLAGS += -fsanitize=address
+else ifeq ($(DB),2)
+	CFLAGS += -fsanitize=thread -g3
+endif
+
 NAME=philo_two
 
 INCS=incs/

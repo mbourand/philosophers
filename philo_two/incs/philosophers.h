@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:30 by user42            #+#    #+#             */
-/*   Updated: 2020/12/01 02:00:32 by user42           ###   ########.fr       */
+/*   Updated: 2020/12/04 15:37:07 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,9 @@
 # include <semaphore.h>
 # include <sys/time.h>
 # include <fcntl.h>
+# include <limits.h>
+
+# define SEM_PERMS 0644
 
 struct s_philo;
 
@@ -62,31 +65,31 @@ typedef struct	s_philo
 	int				set_fed_mutex;
 }				t_philo;
 
-void	*process_philosopher(void *philo);
-void	phil_wait(long micro);
-void	phil_eat(t_philo *philo);
-void	phil_sleep(t_philo *philo);
-void	phil_think(t_philo *philo);
-void	phil_die(t_philo *philo);
-void	phil_fork(t_philo *philo);
-int		starved(t_philo *philo);
-void	log_philo(t_philo *philo, int t, char *msg);
-int		ft_atoui(const char *s);
-size_t	ft_strlen(char *s);
-int		get_time(void);
-int		wait_philosophers(t_env *env);
-int		can_eat(t_philo *philo);
-void	free_env(t_env *env);
-void	log_philo_force(t_philo *philo, int t, char *msg);
-void	wait_fork(t_philo *philo, int index);
-char	*ft_strcpy(char *dest, char *src);
-int		ft_numlen(unsigned int i);
-char	*ft_itoa(unsigned int nb, char *buf);
-void	print_log(int t, int id, char *msg);
-int		is_fed(t_philo *philo);
-int		get_mutexint(t_mutexint* mi);
-void	set_mutexint(t_mutexint* mi, int val);
-void	inc_mutexint(t_mutexint* mi);
-char	*ft_strjoin(char *s1, char *s2, char *buf);
+void			*process_philosopher(void *philo);
+void			phil_wait(long micro);
+void			phil_eat(t_philo *philo);
+void			phil_sleep(t_philo *philo);
+void			phil_think(t_philo *philo);
+void			phil_die(t_philo *philo);
+void			phil_fork(t_philo *philo);
+int				starved(t_philo *philo);
+void			log_philo(t_philo *philo, int t, char *msg);
+int				ft_atoui(const char *s);
+size_t			ft_strlen(char *s);
+int				get_time(void);
+int				wait_philosophers(t_env *env);
+int				can_eat(t_philo *philo);
+void			free_env(t_env *env);
+void			log_philo_force(t_philo *philo, int t, char *msg);
+void			wait_fork(t_philo *philo, int index);
+char			*ft_strcpy(char *dest, char *src);
+int				ft_numlen(unsigned int i);
+char			*ft_itoa(unsigned int nb, char *buf);
+void			print_log(int t, int id, char *msg);
+int				is_fed(t_philo *philo);
+int				get_mutexint(t_mutexint *mi);
+void			set_mutexint(t_mutexint *mi, int val);
+void			inc_mutexint(t_mutexint *mi);
+char			*ft_strjoin(char *s1, char *s2, char *buf);
 
 #endif

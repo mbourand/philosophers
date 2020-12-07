@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:30 by user42            #+#    #+#             */
-/*   Updated: 2020/12/01 02:19:05 by user42           ###   ########.fr       */
+/*   Updated: 2020/12/04 16:30:17 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ size_t	ft_strlen(char *s)
 
 int		ft_atoui(const char *s)
 {
-	int res;
-	int i;
+	long long	res;
+	int			i;
 
 	i = -1;
 	res = 0;
@@ -35,7 +35,7 @@ int		ft_atoui(const char *s)
 		return (-1);
 	while (s[++i])
 	{
-		if (s[i] < '0' || s[i] > '9')
+		if (s[i] < '0' || s[i] > '9' || res > INT_MAX)
 			return (-1);
 		res = res * 10 + (s[i] - '0');
 	}
