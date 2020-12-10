@@ -1,11 +1,20 @@
 CC=gcc
 CFLAGS=-Wall -Wextra -Werror
 
+DB=0
+
+ifeq ($(DB),1)
+	CFLAGS += -fsanitize=address
+else ifeq ($(DB),2)
+	CFLAGS += -fsanitize=thread
+endif
+
 NAME=philo_three
 
 INCS=incs/
 
-SRCS= main.c simulation.c philosopher.c phil_utils.c string_utils.c time_utils.c mutexint.c init.c
+SRCS= main.c simulation.c philosopher.c phil_utils.c string_utils.c time_utils.c \
+		mutexint.c init.c string_utils2.c
 SRCS_PATH=srcs/
 
 OBJS_PATH=objs/

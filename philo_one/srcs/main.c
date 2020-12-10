@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:12 by user42            #+#    #+#             */
-/*   Updated: 2020/12/03 15:27:36 by user42           ###   ########.fr       */
+/*   Updated: 2020/12/10 14:53:34 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,12 @@ int		get_args(int ac, char **av, t_env *env)
 	while (++i < ac)
 	{
 		tmp = (int)ft_atoui(av[i]);
-		if (tmp < 0)
+		if (tmp <= 0)
 			return (0);
 		*(vars[i - 1]) = tmp;
 	}
+	if (env->stngs.philo_nb < 2)
+		return (0);
 	if (ac != 6)
 		env->stngs.max_eat = 2147483647;
 	return (1);
@@ -91,16 +93,16 @@ int		create_philosophers(t_env *env)
 		if (!init_philosopher(env, i))
 			return (0);
 		i += 2;
-		phil_wait(200);
+		phil_wait(200, env);
 	}
-	phil_wait(5000);
+	phil_wait(5000, env);
 	i = 2;
 	while (i <= env->stngs.philo_nb)
 	{
 		if (!init_philosopher(env, i))
 			return (0);
 		i += 2;
-		phil_wait(200);
+		phil_wait(200, env);
 	}
 	return (1);
 }

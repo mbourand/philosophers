@@ -17,6 +17,8 @@ echo PAUSE, faites CTRL + D pour reprendre ; cat
 echo PAUSE, faites CTRL + D pour reprendre ; cat
 ./philo_two 2 310 200 100
 echo PAUSE, faites CTRL + D pour reprendre ; cat
+./philo_two 200 310 200 100
+echo PAUSE, faites CTRL + D pour reprendre ; cat
 
 # --- GRAND NOMBRE DE PHILO ---
 ./philo_two 200 610 200 100
@@ -24,3 +26,22 @@ echo PAUSE, faites CTRL + D pour reprendre ; cat
 
 # --- TIMINGS ---
 ./philo_two 2 410 200 200
+
+# --- ERREURS ---
+./philo_one 1 60 60 60
+echo PAUSE, faites CTRL + D pour reprendre ; cat
+./philo_one 0 60 60 60
+echo PAUSE, faites CTRL + D pour reprendre ; cat
+./philo_one -1 60 60 60
+echo PAUSE, faites CTRL + D pour reprendre ; cat
+./philo_one 2 -1 60 60
+echo PAUSE, faites CTRL + D pour reprendre ; cat
+./philo_one 2 0 60 60
+echo PAUSE, faites CTRL + D pour reprendre ; cat
+./philo_one 2 60 -1 60
+echo PAUSE, faites CTRL + D pour reprendre ; cat
+./philo_one 2 60 0 60
+echo PAUSE, faites CTRL + D pour reprendre ; cat
+./philo_one 2 60 60 -1
+echo PAUSE, faites CTRL + D pour reprendre ; cat
+./philo_one 2 60 60 0

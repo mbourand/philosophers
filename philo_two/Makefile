@@ -6,14 +6,14 @@ DB=0
 ifeq ($(DB),1)
 	CFLAGS += -fsanitize=address
 else ifeq ($(DB),2)
-	CFLAGS += -fsanitize=thread -g3
+	CFLAGS += -fsanitize=thread
 endif
 
 NAME=philo_two
 
 INCS=incs/
 
-SRCS= main.c simulation.c philosopher.c phil_utils.c string_utils.c time_utils.c mutexint.c
+SRCS= main.c simulation.c philosopher.c phil_utils.c string_utils.c time_utils.c mutexint.c string_utils2.c
 SRCS_PATH=srcs/
 
 OBJS_PATH=objs/

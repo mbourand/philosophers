@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:05 by user42            #+#    #+#             */
-/*   Updated: 2020/12/02 16:16:13 by user42           ###   ########.fr       */
+/*   Updated: 2020/12/10 03:06:57 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	*process_philosopher(void *param)
 	t_philo	*philo;
 
 	philo = (t_philo*)param;
-	while (!get_mutexint(&philo->env->finish))
+	while (!is_finished(philo))
 	{
 		fork_and_eat(philo);
 		if (!philo->set_fed_mutex &&
@@ -57,22 +57,23 @@ int		starved(t_philo *philo)
 void	*wait_philosophers_death(void *param)
 {
 	t_philo	*philo;
-	int		i;
 
-	i = -1;
 	philo = (t_philo*)param;
-	while (!get_mutexint(&philo->env->finish))
+	while (!is_finished(philo))
 	{
 		if (starved(philo))
 		{
-			phil_die(philo);
-			while (++i < philo->env->stngs.philo_nb)
-				sem_post(philo->env->stop);
+			if (!phil_die(philo))
+			{
+				sem_post(philo->last_eat.mutex);
+				return (0);
+			}
+			sem_wait(philo->env->lock);
 			sem_post(philo->last_eat.mutex);
+			sem_post(philo->env->stop);
 			return (0);
 		}
-		else
-			sem_post(philo->last_eat.mutex);
+		sem_post(philo->last_eat.mutex);
 		phil_wait(1000);
 	}
 	return (NULL);
@@ -90,8 +91,6 @@ void	*wait_philosophers_fed(void *param)
 		sem_wait(env->fed);
 		i++;
 	}
-	i = -1;
-	while (++i < env->stngs.philo_nb)
-		sem_post(env->stop);
+	sem_post(env->stop);
 	return (NULL);
 }

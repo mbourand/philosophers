@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:30 by user42            #+#    #+#             */
-/*   Updated: 2020/12/02 16:25:05 by user42           ###   ########.fr       */
+/*   Updated: 2020/12/10 03:41:18 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ typedef struct	s_env
 	sem_t			*picking;
 	sem_t			*fed;
 	sem_t			*stop;
+	sem_t			*lock;
 }				t_env;
 
 typedef struct	s_philo
@@ -69,35 +70,37 @@ typedef struct	s_philo
 	pid_t			pid;
 }				t_philo;
 
-void	*process_philosopher(void *philo);
-void	phil_wait(long micro);
-void	phil_eat(t_philo *philo);
-void	phil_sleep(t_philo *philo);
-void	phil_think(t_philo *philo);
-void	phil_die(t_philo *philo);
-void	phil_fork(t_philo *philo);
-int		starved(t_philo *philo);
-void	log_philo(t_philo *philo, int t, char *msg);
-int		ft_atoui(const char *s);
-size_t	ft_strlen(char *s);
-int		get_time(void);
-void	*wait_philosophers_death(void *param);
-void	*wait_philosophers_fed(void *param);
-int		can_eat(t_philo *philo);
-void	free_env(t_env *env);
-void	log_philo_force(t_philo *philo, int t, char *msg);
-void	wait_fork(t_philo *philo, int index);
-char	*ft_strcpy(char *dest, char *src);
-int		ft_numlen(unsigned int i);
-char	*ft_itoa(unsigned int nb, char *buf);
-void	print_log(int t, int id, char *msg);
-int		get_mutexint(t_mutexint* mi);
-void	set_mutexint(t_mutexint* mi, int val);
-void	inc_mutexint(t_mutexint* mi);
-char	*ft_strjoin(char *s1, char *s2, char *buf);
-int		init_env(t_env *env);
-int		init_philosopher(t_env *env, int i);
-int		create_philosophers(t_env *env);
-int		get_args(int ac, char **av, t_env *env);
+void			*process_philosopher(void *philo);
+void			phil_wait(long micro);
+void			phil_eat(t_philo *philo);
+void			phil_sleep(t_philo *philo);
+void			phil_think(t_philo *philo);
+int				phil_die(t_philo *philo);
+void			phil_fork(t_philo *philo);
+int				starved(t_philo *philo);
+void			log_philo(t_philo *philo, int t, char *msg);
+int				ft_atoui(const char *s);
+size_t			ft_strlen(char *s);
+int				get_time(void);
+void			*wait_philosophers_death(void *param);
+void			*wait_philosophers_fed(void *param);
+int				can_eat(t_philo *philo);
+void			free_env(t_env *env);
+void			log_philo_force(t_philo *philo, int t, char *msg);
+void			wait_fork(t_philo *philo, int index);
+char			*ft_strcpy(char *dest, char *src);
+int				ft_numlen(unsigned int i);
+char			*ft_itoa(unsigned int nb, char *buf);
+void			print_log(int t, int id, char *msg);
+int				get_mutexint(t_mutexint *mi);
+void			set_mutexint(t_mutexint *mi, int val);
+void			inc_mutexint(t_mutexint *mi);
+char			*ft_strjoin(char *s1, char *s2, char *buf);
+int				init_env(t_env *env);
+int				init_philosopher(t_env *env, int i);
+int				create_philosophers(t_env *env);
+int				get_args(int ac, char **av, t_env *env);
+int				is_finished(t_philo *philo);
+void			free_sem(sem_t *sem, char *name);
 
 #endif

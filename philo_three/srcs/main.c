@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:12 by user42            #+#    #+#             */
-/*   Updated: 2020/12/02 16:25:54 by user42           ###   ########.fr       */
+/*   Updated: 2020/12/10 03:06:21 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,10 @@ int		main(int ac, char **av)
 			|| !create_philosophers(&env))
 		return (1);
 	pthread_create(&thread, NULL, &wait_philosophers_fed, &env);
+	sem_wait(env.stop);
 	while (i < env.stngs.philo_nb)
-		sem_wait(env.philos[i++].catch_stop);
+		kill(env.philos[i++].pid, SIGKILL);
+	sem_post(env.lock);
 	sem_post(env.log_mutex);
 	i = 0;
 	while (i < env.stngs.philo_nb)

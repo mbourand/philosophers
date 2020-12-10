@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:05 by user42            #+#    #+#             */
-/*   Updated: 2020/12/04 16:46:50 by user42           ###   ########.fr       */
+/*   Updated: 2020/12/10 14:30:46 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ int		wait_philosophers(t_env *env)
 			set_mutexint(&env->finish, 1);
 			return (1);
 		}
-		phil_wait(1000);
+		phil_wait(1000, env);
 	}
 	return (0);
 }

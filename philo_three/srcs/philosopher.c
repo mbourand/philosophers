@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:10 by user42            #+#    #+#             */
-/*   Updated: 2020/12/02 16:29:48 by user42           ###   ########.fr       */
+/*   Updated: 2020/12/09 13:21:02 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	phil_eat(t_philo *philo)
 	int	t;
 
 	t = get_time() - philo->env->start_time;
-	if (get_mutexint(&philo->env->finish))
+	if (is_finished(philo))
 		return ;
 	set_mutexint(&philo->last_eat, get_time());
 	inc_mutexint(&philo->meals);
@@ -30,20 +30,21 @@ void	phil_sleep(t_philo *philo)
 	int	t;
 
 	t = get_time() - philo->env->start_time;
-	if (get_mutexint(&philo->env->finish))
+	if (is_finished(philo))
 		return ;
 	log_philo(philo, t, " is sleeping.");
 	phil_wait(philo->env->stngs.sleep_time * 1000);
 }
 
-void	phil_die(t_philo *philo)
+int		phil_die(t_philo *philo)
 {
 	int	t;
 
 	t = get_time() - philo->env->start_time;
-	if (get_mutexint(&philo->env->finish))
-		return ;
+	if (is_finished(philo))
+		return (0);
 	log_philo_force(philo, t, " died.");
+	return (1);
 }
 
 void	phil_think(t_philo *philo)
@@ -51,7 +52,7 @@ void	phil_think(t_philo *philo)
 	int	t;
 
 	t = get_time() - philo->env->start_time;
-	if (get_mutexint(&philo->env->finish))
+	if (is_finished(philo))
 		return ;
 	log_philo(philo, t, " is thinking.");
 }
@@ -61,7 +62,7 @@ void	phil_fork(t_philo *philo)
 	int	t;
 
 	t = get_time() - philo->env->start_time;
-	if (get_mutexint(&philo->env->finish))
+	if (is_finished(philo))
 		return ;
 	log_philo(philo, t, " has taken a fork.");
 }

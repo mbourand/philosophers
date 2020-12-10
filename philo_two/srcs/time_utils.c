@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils2.c                                           :+:      :+:    :+:   */
+/*   time_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:17 by user42            #+#    #+#             */
-/*   Updated: 2020/11/30 18:16:04 by user42           ###   ########.fr       */
+/*   Updated: 2020/12/10 14:26:30 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int		get_time(void)
 	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
-void	phil_wait(long micro)
+void	phil_wait(long micro, t_env *env)
 {
 	int time;
 	int current;
@@ -28,6 +28,8 @@ void	phil_wait(long micro)
 	time = get_time();
 	while (1)
 	{
+		if (micro > 2000000 && get_mutexint(&env->finish))
+			break ;
 		usleep(1000);
 		current = get_time();
 		if (time + micro / 1000 <= current)

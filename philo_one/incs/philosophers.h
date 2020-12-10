@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:30 by user42            #+#    #+#             */
-/*   Updated: 2020/12/03 15:02:31 by user42           ###   ########.fr       */
+/*   Updated: 2020/12/08 21:19:07 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ typedef struct	s_philo
 }				t_philo;
 
 void			*process_philosopher(void *philo);
-void			phil_wait(long micro);
+void			phil_wait(long micro, t_env *env);
 void			phil_eat(t_philo *philo);
 void			phil_sleep(t_philo *philo);
 void			phil_think(t_philo *philo);

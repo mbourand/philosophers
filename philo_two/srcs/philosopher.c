@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:10 by user42            #+#    #+#             */
-/*   Updated: 2020/12/01 01:31:48 by user42           ###   ########.fr       */
+/*   Updated: 2020/12/10 14:30:33 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	phil_eat(t_philo *philo)
 	set_mutexint(&philo->last_eat, get_time());
 	inc_mutexint(&philo->meals);
 	log_philo(philo, t, " is eating.");
-	phil_wait(philo->env->stngs.eat_time * 1000);
+	phil_wait(philo->env->stngs.eat_time * 1000, philo->env);
 }
 
 void	phil_sleep(t_philo *philo)
@@ -33,7 +33,7 @@ void	phil_sleep(t_philo *philo)
 	if (get_mutexint(&philo->env->finish))
 		return ;
 	log_philo(philo, t, " is sleeping.");
-	phil_wait(philo->env->stngs.sleep_time * 1000);
+	phil_wait(philo->env->stngs.sleep_time * 1000, philo->env);
 }
 
 void	phil_die(t_philo *philo)

@@ -6,23 +6,11 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 12:28:30 by user42            #+#    #+#             */
-/*   Updated: 2020/12/01 02:19:05 by user42           ###   ########.fr       */
+/*   Updated: 2020/12/10 14:34:46 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
-size_t	ft_strlen(char *s)
-{
-	size_t	i;
-
-	if (!s)
-		return (0);
-	i = 0;
-	while (s[i])
-		i++;
-	return (i);
-}
 
 int		ft_atoui(const char *s)
 {
